@@ -31,5 +31,17 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-    - name: Run tests
-      run: bundle exec rake
+    - name: Build
+      env:
+        RAILS_ENV: test
+      run: |
+        sudo apt-get -yqq install libsqlite3-dev
+        bundle install --jobs 4 --retry 3
+        bin/rails db:create
+        bin/rails db:migrate
+    - name: rubocop test
+      run: |
+        rubocop
+    - name: rspec test
+      run: |
+        rspec
